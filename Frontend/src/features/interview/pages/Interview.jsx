@@ -1,17 +1,80 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import '../style/interview.scss'
 import { useInterview } from '../hooks/useInterview.js'
 import { useNavigate, useParams } from 'react-router'
 
-
-
 const NAV_ITEMS = [
-    { id: 'technical', label: 'Technical Questions', icon: (<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="16 18 22 12 16 6" /><polyline points="8 6 2 12 8 18" /></svg>) },
-    { id: 'behavioral', label: 'Behavioral Questions', icon: (<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" /></svg>) },
+    { id: 'technical', label: 'Technical', icon: (<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="16 18 22 12 16 6" /><polyline points="8 6 2 12 8 18" /></svg>) },
+    { id: 'behavioral', label: 'Behavioral', icon: (<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" /></svg>) },
     { id: 'roadmap', label: 'Road Map', icon: (<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="3 11 22 2 13 21 11 13 3 11" /></svg>) },
 ]
 
-// ── Sub-components ────────────────────────────────────────────────────────────
+// ── Animated count-up hook ────────────────────────────────────────
+const useCountUp = (target, duration = 1400) => {
+    const [ value, setValue ] = useState(0)
+    const startedAt = useRef(null)
+    const rafId = useRef(null)
+
+    useEffect(() => {
+        startedAt.current = null
+        const tick = (ts) => {
+            if (startedAt.current === null) startedAt.current = ts
+            const progress = Math.min(1, (ts - startedAt.current) / duration)
+            // ease-out-cubic
+            const eased = 1 - Math.pow(1 - progress, 3)
+            setValue(Math.round(target * eased))
+            if (progress < 1) rafId.current = requestAnimationFrame(tick)
+        }
+        rafId.current = requestAnimationFrame(tick)
+        return () => rafId.current && cancelAnimationFrame(rafId.current)
+    }, [ target, duration ])
+
+    return value
+}
+
+// ── Match score ring ──────────────────────────────────────────────
+const MatchScoreRing = ({ score }) => {
+    const value = useCountUp(score)
+    const size = 160
+    const stroke = 12
+    const radius = (size - stroke) / 2
+    const circumference = 2 * Math.PI * radius
+    const offset = circumference - (value / 100) * circumference
+
+    return (
+        <div className='score-ring'>
+            <svg width={size} height={size}>
+                <defs>
+                    <linearGradient id='score-gradient' x1='0%' y1='0%' x2='100%' y2='100%'>
+                        <stop offset='0%' stopColor='#8b5cf6' />
+                        <stop offset='60%' stopColor='#ec4899' />
+                        <stop offset='100%' stopColor='#f59e0b' />
+                    </linearGradient>
+                </defs>
+                <circle
+                    className='score-ring__track'
+                    cx={size / 2}
+                    cy={size / 2}
+                    r={radius}
+                />
+                <circle
+                    className='score-ring__progress'
+                    cx={size / 2}
+                    cy={size / 2}
+                    r={radius}
+                    strokeDasharray={circumference}
+                    strokeDashoffset={offset}
+                />
+            </svg>
+            <div className='score-ring__value'>
+                <span className='num'>{value}</span>
+                <span className='pct'>%</span>
+            </div>
+        </div>
+    )
+}
+
+// ── Question card ─────────────────────────────────────────────────
 const QuestionCard = ({ item, index }) => {
     const [ open, setOpen ] = useState(false)
     return (
@@ -20,7 +83,7 @@ const QuestionCard = ({ item, index }) => {
                 <span className='q-card__index'>Q{index + 1}</span>
                 <p className='q-card__question'>{item.question}</p>
                 <span className={`q-card__chevron ${open ? 'q-card__chevron--open' : ''}`}>
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 12 15 18 9" /></svg>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 12 15 18 9" /></svg>
                 </span>
             </div>
             {open && (
@@ -39,6 +102,7 @@ const QuestionCard = ({ item, index }) => {
     )
 }
 
+// ── Roadmap day ───────────────────────────────────────────────────
 const RoadMapDay = ({ day }) => (
     <div className='roadmap-day'>
         <div className='roadmap-day__header'>
@@ -56,11 +120,12 @@ const RoadMapDay = ({ day }) => (
     </div>
 )
 
-// ── Main Component ────────────────────────────────────────────────────────────
+// ── Page ──────────────────────────────────────────────────────────
 const Interview = () => {
     const [ activeNav, setActiveNav ] = useState('technical')
     const { report, getReportById, loading, getResumePdf } = useInterview()
     const { interviewId } = useParams()
+    const navigate = useNavigate()
 
     useEffect(() => {
         if (interviewId) {
@@ -68,28 +133,37 @@ const Interview = () => {
         }
     }, [ interviewId ])
 
-
-
     if (loading || !report) {
         return (
             <main className='loading-screen'>
-                <h1>Loading your interview plan...</h1>
+                <h1>Loading your interview plan…</h1>
             </main>
         )
     }
 
-    const scoreColor =
-        report.matchScore >= 80 ? 'score--high' :
-            report.matchScore >= 60 ? 'score--mid' : 'score--low'
-
-
     return (
         <div className='interview-page'>
+
+            {/* Top bar */}
+            <div className='interview-topbar'>
+                <button
+                    className='interview-topbar__back'
+                    onClick={() => navigate('/')}
+                >
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                        <line x1="19" y1="12" x2="5" y2="12" />
+                        <polyline points="12 19 5 12 12 5" />
+                    </svg>
+                    All plans
+                </button>
+                <p className='interview-topbar__title'>{report.title || 'Untitled Position'}</p>
+            </div>
+
             <div className='interview-layout'>
 
-                {/* ── Left Nav ── */}
+                {/* ── Left nav ── */}
                 <nav className='interview-nav'>
-                    <div className="nav-content">
+                    <div className='nav-content'>
                         <p className='interview-nav__label'>Sections</p>
                         {NAV_ITEMS.map(item => (
                             <button
@@ -103,19 +177,22 @@ const Interview = () => {
                         ))}
                     </div>
                     <button
-                        onClick={() => { getResumePdf(interviewId) }}
-                        className='button primary-button' >
-                        <svg height={"0.8rem"} style={{ marginRight: "0.8rem" }} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M10.6144 17.7956 11.492 15.7854C12.2731 13.9966 13.6789 12.5726 15.4325 11.7942L17.8482 10.7219C18.6162 10.381 18.6162 9.26368 17.8482 8.92277L15.5079 7.88394C13.7092 7.08552 12.2782 5.60881 11.5105 3.75894L10.6215 1.61673C10.2916.821765 9.19319.821767 8.8633 1.61673L7.97427 3.75892C7.20657 5.60881 5.77553 7.08552 3.97685 7.88394L1.63658 8.92277C.868537 9.26368.868536 10.381 1.63658 10.7219L4.0523 11.7942C5.80589 12.5726 7.21171 13.9966 7.99275 15.7854L8.8704 17.7956C9.20776 18.5682 10.277 18.5682 10.6144 17.7956ZM19.4014 22.6899 19.6482 22.1242C20.0882 21.1156 20.8807 20.3125 21.8695 19.8732L22.6299 19.5353C23.0412 19.3526 23.0412 18.7549 22.6299 18.5722L21.9121 18.2532C20.8978 17.8026 20.0911 16.9698 19.6586 15.9269L19.4052 15.3156C19.2285 14.8896 18.6395 14.8896 18.4628 15.3156L18.2094 15.9269C17.777 16.9698 16.9703 17.8026 15.956 18.2532L15.2381 18.5722C14.8269 18.7549 14.8269 19.3526 15.2381 19.5353L15.9985 19.8732C16.9874 20.3125 17.7798 21.1156 18.2198 22.1242L18.4667 22.6899C18.6473 23.104 19.2207 23.104 19.4014 22.6899Z"></path></svg>
+                        onClick={() => getResumePdf(interviewId)}
+                        className='button primary-button sidebar-download'
+                    >
+                        <svg width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='currentColor' strokeWidth='2' strokeLinecap='round' strokeLinejoin='round'>
+                            <path d='M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4' />
+                            <polyline points='7 10 12 15 17 10' />
+                            <line x1='12' y1='15' x2='12' y2='3' />
+                        </svg>
                         Download Resume
                     </button>
                 </nav>
 
-                <div className='interview-divider' />
-
-                {/* ── Center Content ── */}
+                {/* ── Center content ── */}
                 <main className='interview-content'>
                     {activeNav === 'technical' && (
-                        <section>
+                        <section key='technical'>
                             <div className='content-header'>
                                 <h2>Technical Questions</h2>
                                 <span className='content-header__count'>{report.technicalQuestions.length} questions</span>
@@ -129,7 +206,7 @@ const Interview = () => {
                     )}
 
                     {activeNav === 'behavioral' && (
-                        <section>
+                        <section key='behavioral'>
                             <div className='content-header'>
                                 <h2>Behavioral Questions</h2>
                                 <span className='content-header__count'>{report.behavioralQuestions.length} questions</span>
@@ -143,7 +220,7 @@ const Interview = () => {
                     )}
 
                     {activeNav === 'roadmap' && (
-                        <section>
+                        <section key='roadmap'>
                             <div className='content-header'>
                                 <h2>Preparation Road Map</h2>
                                 <span className='content-header__count'>{report.preparationPlan.length}-day plan</span>
@@ -157,29 +234,32 @@ const Interview = () => {
                     )}
                 </main>
 
-                <div className='interview-divider' />
-
-                {/* ── Right Sidebar ── */}
+                {/* ── Right sidebar ── */}
                 <aside className='interview-sidebar'>
 
-                    {/* Match Score */}
-                    <div className='match-score'>
-                        <p className='match-score__label'>Match Score</p>
-                        <div className={`match-score__ring ${scoreColor}`}>
-                            <span className='match-score__value'>{report.matchScore}</span>
-                            <span className='match-score__pct'>%</span>
-                        </div>
-                        <p className='match-score__sub'>Strong match for this role</p>
+                    <div className='match-score-card'>
+                        <p className='match-score-card__label'>Match Score</p>
+                        <MatchScoreRing score={report.matchScore || 0} />
+                        <p className='match-score-card__sub'>
+                            {report.matchScore >= 80
+                                ? 'Strong match for this role'
+                                : report.matchScore >= 60
+                                    ? 'Solid foundation — close some gaps'
+                                    : 'Worth preparing — gaps are addressable'}
+                        </p>
                     </div>
 
                     <div className='sidebar-divider' />
 
-                    {/* Skill Gaps */}
                     <div className='skill-gaps'>
                         <p className='skill-gaps__label'>Skill Gaps</p>
                         <div className='skill-gaps__list'>
                             {report.skillGaps.map((gap, i) => (
-                                <span key={i} className={`skill-tag skill-tag--${gap.severity}`}>
+                                <span
+                                    key={i}
+                                    className={`skill-tag skill-tag--${gap.severity}`}
+                                    style={{ animationDelay: `${i * 60}ms` }}
+                                >
                                     {gap.skill}
                                 </span>
                             ))}

@@ -1,0 +1,434 @@
+// ── Dashboard page shell ─────────────────────────────────────────
+.dashboard-page {
+    width: 100%;
+    min-height: 100vh;
+    padding: 2rem 1.5rem 4rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2rem;
+    color: var(--text-primary);
+    animation: home-fade-in 0.6s var(--easing) both;
+}
+
+// ── Top bar ──────────────────────────────────────────────────────
+.dash-topbar {
+    width: 100%;
+    max-width: 1180px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    flex-wrap: wrap;
+
+    &__brand {
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+        font-family: var(--font-display);
+        font-weight: 700;
+        font-size: 1.1rem;
+        letter-spacing: -0.02em;
+
+        .brand-mark {
+            width: 32px;
+            height: 32px;
+            border-radius: 9px;
+            background: var(--accent-grad);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            box-shadow: 0 6px 16px -4px rgba(139, 92, 246, 0.5);
+        }
+    }
+
+    &__user {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.6rem;
+        padding: 0.4rem 0.4rem 0.4rem 1rem;
+        border-radius: 999px;
+        background: var(--glass-surface);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border: 1px solid var(--glass-border);
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: var(--text-primary);
+    }
+
+    &__avatar {
+        width: 32px;
+        height: 32px;
+        border-radius: 999px;
+        background: var(--accent-grad);
+        color: white;
+        font-weight: 800;
+        font-size: 0.85rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-transform: uppercase;
+        box-shadow: 0 4px 10px -3px rgba(139, 92, 246, 0.5);
+    }
+
+    &__logout {
+        margin-left: 0.4rem;
+        padding: 0.45rem 0.85rem;
+        border-radius: 999px;
+        border: none;
+        background: rgba(239, 68, 68, 0.1);
+        color: #b91c1c;
+        font-family: var(--font-sans);
+        font-size: 0.78rem;
+        font-weight: 700;
+        letter-spacing: -0.01em;
+        cursor: pointer;
+        transition: background 0.2s var(--easing), color 0.2s var(--easing);
+
+        &:hover {
+            background: rgba(239, 68, 68, 0.2);
+            color: #991b1b;
+        }
+    }
+}
+
+// ── Greeting hero ────────────────────────────────────────────────
+.dash-hero {
+    width: 100%;
+    max-width: 1180px;
+    border-radius: var(--radius-xl);
+    background: var(--glass-surface-strong);
+    backdrop-filter: var(--glass-blur);
+    -webkit-backdrop-filter: var(--glass-blur);
+    border: 1px solid var(--glass-border-strong);
+    box-shadow: var(--glass-shadow);
+    padding: 2.5rem 2.5rem;
+    overflow: hidden;
+    position: relative;
+    isolation: isolate;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 2rem;
+    align-items: center;
+
+    &::before {
+        content: '';
+        position: absolute;
+        right: -80px;
+        top: -80px;
+        width: 320px;
+        height: 320px;
+        border-radius: 999px;
+        background: var(--accent-grad);
+        opacity: 0.12;
+        filter: blur(24px);
+        z-index: -1;
+        animation: dash-orb 14s ease-in-out infinite alternate;
+    }
+
+    &__copy {
+        max-width: 580px;
+    }
+
+    &__eyebrow {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.35rem 0.85rem;
+        border-radius: 999px;
+        background: var(--accent-grad-soft);
+        border: 1px solid rgba(139, 92, 246, 0.25);
+        font-size: 0.74rem;
+        font-weight: 700;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        color: var(--text-secondary);
+        margin-bottom: 1rem;
+    }
+
+    h1 {
+        font-family: var(--font-display);
+        font-size: clamp(1.85rem, 4vw, 2.85rem);
+        font-weight: 800;
+        line-height: 1.1;
+        letter-spacing: -0.03em;
+        margin-bottom: 0.85rem;
+    }
+
+    p {
+        font-size: 1rem;
+        color: var(--text-muted);
+        line-height: 1.55;
+    }
+
+    @media (max-width: 760px) {
+        grid-template-columns: 1fr;
+        padding: 2rem 1.5rem;
+    }
+}
+
+@keyframes dash-orb {
+    0%   { transform: translate(0, 0) scale(1); }
+    100% { transform: translate(-40px, 30px) scale(1.15); }
+}
+
+.dash-cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 1.1rem 1.85rem;
+    border-radius: 999px;
+    border: none;
+    cursor: pointer;
+    color: white;
+    font-family: var(--font-sans);
+    font-size: 1rem;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    background: var(--accent-grad);
+    background-size: 200% 200%;
+    background-position: 0% 50%;
+    box-shadow:
+        0 14px 32px -8px rgba(139, 92, 246, 0.6),
+        0 8px 20px -6px rgba(236, 72, 153, 0.5),
+        inset 0 1px 0 rgba(255, 255, 255, 0.4);
+    transition:
+        transform 0.25s var(--easing),
+        box-shadow 0.25s var(--easing),
+        background-position 0.6s var(--easing);
+
+    svg {
+        transition: transform 0.4s var(--easing);
+    }
+
+    &:hover {
+        transform: translateY(-3px);
+        background-position: 100% 50%;
+        box-shadow:
+            0 22px 44px -10px rgba(139, 92, 246, 0.75),
+            0 12px 28px -8px rgba(236, 72, 153, 0.6),
+            inset 0 1px 0 rgba(255, 255, 255, 0.5);
+
+        svg {
+            transform: translateX(4px);
+        }
+    }
+
+    &:active {
+        transform: translateY(-1px) scale(0.98);
+    }
+}
+
+// ── Stats row ────────────────────────────────────────────────────
+.dash-stats {
+    width: 100%;
+    max-width: 1180px;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+
+    @media (max-width: 760px) {
+        grid-template-columns: 1fr;
+    }
+}
+
+.stat-card {
+    padding: 1.25rem 1.4rem;
+    border-radius: var(--radius-lg);
+    background: var(--glass-surface);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid var(--glass-border);
+    box-shadow: 0 8px 24px -12px rgba(76, 29, 149, 0.18);
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    transition:
+        transform 0.25s var(--easing),
+        box-shadow 0.25s var(--easing),
+        border-color 0.25s var(--easing);
+
+    &__icon {
+        width: 44px;
+        height: 44px;
+        border-radius: 12px;
+        background: var(--accent-grad-soft);
+        color: var(--accent-purple);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        border: 1px solid rgba(139, 92, 246, 0.22);
+    }
+
+    &__body {
+        display: flex;
+        flex-direction: column;
+        gap: 0.15rem;
+        flex: 1;
+        min-width: 0;
+    }
+
+    &__label {
+        font-size: 0.74rem;
+        font-weight: 700;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        color: var(--text-muted);
+    }
+
+    &__value {
+        font-family: var(--font-display);
+        font-size: 1.75rem;
+        font-weight: 800;
+        letter-spacing: -0.03em;
+        color: var(--text-primary);
+        font-variant-numeric: tabular-nums;
+        line-height: 1.1;
+
+        .suffix {
+            font-size: 1rem;
+            color: var(--text-muted);
+            margin-left: 0.15rem;
+            font-weight: 600;
+        }
+    }
+
+    &:hover {
+        transform: translateY(-2px);
+        border-color: rgba(139, 92, 246, 0.35);
+        box-shadow: 0 16px 36px -12px rgba(76, 29, 149, 0.28);
+    }
+}
+
+// ── Plans section ────────────────────────────────────────────────
+.dash-plans {
+    width: 100%;
+    max-width: 1180px;
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+
+    &__header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+        flex-wrap: wrap;
+
+        h2 {
+            font-family: var(--font-display);
+            font-size: 1.5rem;
+            font-weight: 800;
+            letter-spacing: -0.025em;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+
+            .count-pill {
+                font-family: var(--font-sans);
+                font-size: 0.78rem;
+                font-weight: 700;
+                color: var(--text-secondary);
+                padding: 0.2rem 0.65rem;
+                border-radius: 999px;
+                background: var(--accent-grad-soft);
+                border: 1px solid rgba(139, 92, 246, 0.25);
+                letter-spacing: 0;
+            }
+        }
+    }
+}
+
+.dash-plans-list {
+    list-style: none;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1rem;
+}
+
+// ── Empty state ──────────────────────────────────────────────────
+.empty-state {
+    width: 100%;
+    max-width: 1180px;
+    padding: 3.5rem 2rem;
+    border-radius: var(--radius-xl);
+    background: var(--glass-surface);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1.5px dashed rgba(139, 92, 246, 0.35);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 0.6rem;
+
+    &__icon {
+        width: 56px;
+        height: 56px;
+        border-radius: 16px;
+        background: var(--accent-grad-soft);
+        color: var(--accent-purple);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 0.6rem;
+        border: 1px solid rgba(139, 92, 246, 0.25);
+    }
+
+    h3 {
+        font-family: var(--font-display);
+        font-size: 1.25rem;
+        font-weight: 800;
+        letter-spacing: -0.02em;
+        color: var(--text-primary);
+    }
+
+    p {
+        color: var(--text-muted);
+        font-size: 0.95rem;
+        max-width: 420px;
+        line-height: 1.55;
+    }
+}
+
+// ── Reuse home topbar back button styles for prep page ───────────
+.home-topbar__back {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.55rem 1rem;
+    border-radius: 999px;
+    background: var(--glass-surface);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid var(--glass-border);
+    color: var(--text-primary);
+    font-family: var(--font-sans);
+    font-size: 0.85rem;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    cursor: pointer;
+    transition:
+        transform 0.2s var(--easing),
+        background 0.2s var(--easing),
+        border-color 0.2s var(--easing);
+
+    svg {
+        transition: transform 0.25s var(--easing);
+    }
+
+    &:hover {
+        background: var(--glass-surface-strong);
+        border-color: rgba(139, 92, 246, 0.4);
+        transform: translateX(-2px);
+
+        svg {
+            transform: translateX(-3px);
+        }
+    }
+}

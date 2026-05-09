@@ -1,44 +1,164 @@
-main{
+.auth-page {
     min-height: 100vh;
     width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem 1rem;
+    position: relative;
+}
+
+.auth-card {
+    width: 100%;
+    max-width: 440px;
+    padding: 2.75rem 2.5rem;
+    border-radius: var(--radius-lg);
+    background: var(--glass-surface-strong);
+    backdrop-filter: var(--glass-blur);
+    -webkit-backdrop-filter: var(--glass-blur);
+    border: 1px solid var(--glass-border-strong);
+    box-shadow: var(--glass-shadow);
 
     display: flex;
-    justify-content: center;
-    align-items: center;
+    flex-direction: column;
+    gap: 1.5rem;
 
+    animation: auth-card-in 0.6s var(--easing) both;
 
-    .form-container{
-        min-width: 350px;
-
+    &__brand {
         display: flex;
-        flex-direction: column;
-        gap: 1rem;
-    }
+        align-items: center;
+        gap: 0.6rem;
+        margin-bottom: 0.25rem;
 
-    form{
-        display: flex;
-        flex-direction: column;
-        gap: 0.75rem;
-    }
+        &-mark {
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            background: var(--accent-grad);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 800;
+            font-family: var(--font-display);
+            letter-spacing: -0.04em;
+            box-shadow: 0 6px 16px -4px rgba(139, 92, 246, 0.5);
+        }
 
-    .input-group{
-        display: flex;
-        flex-direction: column;
-
-        gap: 0.5rem;
-
-
-        input{
-            border: none;
-            outline: none;
-            padding-inline: 1rem;
-            padding-block: 0.75rem;
-            border-radius: 0.75rem;
+        &-name {
+            font-family: var(--font-display);
+            font-size: 1.1rem;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            color: var(--text-primary);
         }
     }
 
-    a{
-        color: #e1034d;
-        text-decoration: none;
+    &__title {
+        font-family: var(--font-display);
+        font-size: 1.85rem;
+        font-weight: 800;
+        letter-spacing: -0.03em;
+        line-height: 1.15;
+        color: var(--text-primary);
+    }
+
+    &__subtitle {
+        color: var(--text-muted);
+        font-size: 0.95rem;
+        line-height: 1.5;
+        margin-top: -0.5rem;
+    }
+
+    &__form {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+        margin-top: 0.25rem;
+    }
+
+    &__footer {
+        text-align: center;
+        font-size: 0.9rem;
+        color: var(--text-muted);
+
+        a {
+            color: var(--accent-purple);
+            font-weight: 600;
+            text-decoration: none;
+            transition: color 0.2s var(--easing);
+
+            &:hover {
+                color: var(--accent-pink);
+            }
+        }
+    }
+}
+
+// ── Floating-label input ─────────────────────────────────────────
+.field {
+    position: relative;
+
+    input {
+        width: 100%;
+        padding: 1.2rem 1rem 0.6rem;
+        border: 1.5px solid rgba(139, 92, 246, 0.18);
+        border-radius: var(--radius-md);
+        background: rgba(255, 255, 255, 0.6);
+        color: var(--text-primary);
+        font-family: var(--font-sans);
+        font-size: 1rem;
+        outline: none;
+        transition:
+            border-color 0.25s var(--easing),
+            background 0.25s var(--easing),
+            box-shadow 0.25s var(--easing);
+
+        &::placeholder {
+            color: transparent;
+        }
+
+        &:hover {
+            border-color: rgba(139, 92, 246, 0.35);
+        }
+
+        &:focus {
+            border-color: var(--accent-purple);
+            background: rgba(255, 255, 255, 0.85);
+            box-shadow: 0 0 0 4px rgba(139, 92, 246, 0.15);
+        }
+    }
+
+    label {
+        position: absolute;
+        left: 1rem;
+        top: 1rem;
+        font-size: 1rem;
+        color: var(--text-muted);
+        pointer-events: none;
+        transition: all 0.2s var(--easing);
+        background: transparent;
+    }
+
+    input:focus + label,
+    input:not(:placeholder-shown) + label {
+        top: 0.35rem;
+        font-size: 0.72rem;
+        font-weight: 600;
+        color: var(--accent-purple);
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+    }
+}
+
+@keyframes auth-card-in {
+    from {
+        opacity: 0;
+        transform: translateY(20px) scale(0.98);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
     }
 }
